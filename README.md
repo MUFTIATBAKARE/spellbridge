@@ -142,3 +142,4 @@ This validates the build outputs, triggers the pre-flight check on `https://api.
 ## 📜 License
 
 MIT License. Built for the `start.ng` educational game collection.
+

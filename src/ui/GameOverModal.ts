@@ -7,6 +7,7 @@
  * - Fetches and renders the Top 10 start.ng leaderboard
  * - CRITICAL UI RULE ENFORCED: Leaderboard entries use colored circular initial badges
  *   (entry.color)—NEVER an <img> tag!
+ * - Share on X integration: opens https://twitter.com/intent/tweet per start.ng standards
  * - Features "Play Again" action to restart round
  */
 
@@ -60,6 +61,7 @@ export class GameOverModal {
         </div>
 
         <div class="modal-footer">
+          <button class="modal-secondary-btn share-btn" id="go-share-btn">Share on 𝕏</button>
           <button class="modal-primary-btn play-again-btn" id="go-play-again-btn">Play Again</button>
         </div>
       </div>
@@ -72,6 +74,18 @@ export class GameOverModal {
     this.streakEl = this.modalEl.querySelector('#go-streak') as HTMLElement;
     this.leaderboardListEl = this.modalEl.querySelector('#go-leaderboard-list') as HTMLElement;
     this.playAgainBtn = this.modalEl.querySelector('#go-play-again-btn') as HTMLButtonElement;
+
+    // start.ng Game Standard: Let players share their result on X
+    const shareBtn = this.modalEl.querySelector('#go-share-btn');
+    shareBtn?.addEventListener('click', () => {
+      const words = this.wordsSpelledEl.textContent || '0';
+      const acc = this.accuracyEl.textContent || '100%';
+      const streak = this.streakEl.textContent || '0';
+      const text = encodeURIComponent(`I just spelled ${words} words with ${acc} accuracy in SpellBridge 3D! Can you beat my streak of ${streak}? 🌉🌊`);
+      const url = encodeURIComponent('https://spellbridge.start.ng');
+      const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+      window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    });
 
     this.playAgainBtn.addEventListener('click', () => {
       this.close();
