@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SpellBridge 3D - Cover Art Generator (1600x1000)</title>
+  <style>
+    body {
+      margin: 0;
+      background: #1e293b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: system-ui, sans-serif;
+      color: #f8fafc;
+      gap: 1.5rem;
+      padding: 1rem;
+    }
+    canvas {
+      width: 800px;
+      height: 500px;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      border: 3px solid #334155;
+    }
+    button {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 0.8rem 1.6rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+      transition: transform 0.15s ease;
+    }
+    button:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <h1>SpellBridge 3D - 16:10 Cover Generator</h1>
+  <canvas id="coverCanvas" width="1600" height="1000"></canvas>
+  <button id="downloadBtn">Download cover.png (1600x1000)</button>
+
+  <script>
+    const canvas = document.getElementById('coverCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function drawCover() {
+      const W = 1600;
+      const H = 1000;
+
+      // 1. Sky Gradient
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.6);
+      skyGrad.addColorStop(0, '#7dd3fc');
+      skyGrad.addColorStop(1, '#bae6fd');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Fluffy clouds
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+      drawCloud(ctx, 300, 180, 110);
+      drawCloud(ctx, 1250, 160, 130);
+      drawCloud(ctx, 750, 120, 90);
+
+      // 2. River / Water Basin
+      const waterGrad = ctx.createLinearGradient(0, H * 0.45, 0, H);
+      waterGrad.addColorStop(0, '#38bdf8');
+      waterGrad.addColorStop(0.5, '#0ea5e9');
+      waterGrad.addColorStop(1, '#0284c7');
+      ctx.fillStyle = waterGrad;
+      ctx.fillRect(0, H * 0.48, W, H * 0.52);
+
+      // Wave facets / facets
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.lineWidth = 6;
+      for (let y = H * 0.55; y < H; y += 45) {
+        ctx.beginPath();
+        for (let x = 0; x <= W; x += 120) {
+          const cy = y + Math.sin(x * 0.02) * 12;
+          if (x === 0) ctx.moveTo(x, cy);
+          else ctx.lineTo(x, cy);
+        }
+        ctx.stroke();
+      }
+
+      // 3. Islands (Left Start Island & Right Destination Island)
+      // Left Island
+      drawIsland(ctx, 0, H * 0.55, 420, 480, '#22c55e', '#78350f');
+      // Right Island
+      drawIsland(ctx, W - 420, H * 0.55, 420, 480, '#16a34a', '#78350f');
+
+      // Cartoon Trees
+      drawTree(ctx, 160, H * 0.44);
+      drawTree(ctx, 280, H * 0.48);
+      drawTree(ctx, W - 220, H * 0.44);
+      drawTree(ctx, W - 320, H * 0.49);
+
+      // 4. Stepping Stones across River
+      const letters = ['S', 'P', 'E', 'L', 'L'];
+      const stoneStartX = 480;
+      const stoneSpacing = 160;
+      letters.forEach((letter, i) => {
+        const sx = stoneStartX + i * stoneSpacing;
+        const sy = H * 0.72 + Math.sin(i * 1.2) * 20;
+        drawLetterStone(ctx, sx, sy, letter, i === 2);
+      });
+
+      // 5. Title & Badge
+      ctx.save();
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+      ctx.shadowBlur = 24;
+      ctx.shadowOffsetY = 8;
+
+      // Title Banner
+      ctx.fillStyle = '#ffffff';
+      roundRect(ctx, 350, 180, 900, 160, 40);
+      ctx.fill();
+      ctx.restore();
+
+      // Border on title banner
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 10;
+      roundRect(ctx, 350, 180, 900, 160, 40);
+      ctx.stroke();
+
+      // Title Text
+      ctx.fillStyle = '#1e3a8a';
+      ctx.font = '900 84px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('SPELLBRIDGE 3D', 800, 245);
+
+      // Subtitle
+      ctx.fillStyle = '#d97706';
+      ctx.font = '800 32px system-ui, sans-serif';
+      ctx.fillText('✨ EDUCATIONAL RIVER PUZZLE RUNNER ✨', 800, 305);
+
+      // Platform Badge at bottom
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      roundRect(ctx, 640, 890, 320, 56, 28);
+      ctx.fill();
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '800 22px system-ui, sans-serif';
+      ctx.fillText('HOSTED ON start.ng', 800, 925);
+    }
+
+    function drawCloud(ctx, cx, cy, r) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r * 0.6, 0, Math.PI * 2);
+      ctx.arc(cx + r * 0.5, cy - r * 0.2, r * 0.55, 0, Math.PI * 2);
+      ctx.arc(cx + r, cy, r * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawIsland(ctx, x, y, w, h, topColor, cliffColor) {
+      // Cliff Base
+      ctx.fillStyle = cliffColor;
+      ctx.beginPath();
+      ctx.moveTo(x, y + 40);
+      ctx.lineTo(x + w, y + 40);
+      ctx.lineTo(x + w * 0.9, y + h);
+      ctx.lineTo(x + w * 0.1, y + h);
+      ctx.closePath();
+      ctx.fill();
+
+      // Grassy Top
+      ctx.fillStyle = topColor;
+      ctx.beginPath();
+      ctx.ellipse(x + w * 0.5, y + 40, w * 0.5, 70, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawTree(ctx, x, y) {
+      // Trunk
+      ctx.fillStyle = '#5c2c08';
+      ctx.fillRect(x - 14, y, 28, 70);
+
+      // Foliage Cones
+      const colors = ['#15803d', '#16a34a', '#22c55e'];
+      for (let i = 0; i < 3; i++) {
+        ctx.fillStyle = colors[i];
+        ctx.beginPath();
+        ctx.moveTo(x, y - 90 - i * 40);
+        ctx.lineTo(x + 55 - i * 8, y + 15 - i * 35);
+        ctx.lineTo(x - 55 + i * 8, y + 15 - i * 35);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    function drawLetterStone(ctx, x, y, letter, glowing) {
+      // Shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+      ctx.beginPath();
+      ctx.ellipse(x, y + 55, 60, 24, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Stone Base
+      ctx.fillStyle = glowing ? '#86efac' : '#fef3c7';
+      ctx.strokeStyle = glowing ? '#16a34a' : '#d97706';
+      ctx.lineWidth = 10;
+      roundRect(ctx, x - 55, y - 55, 110, 110, 24);
+      ctx.fill();
+      ctx.stroke();
+
+      // Letter
+      ctx.fillStyle = glowing ? '#14532d' : '#1e3a8a';
+      ctx.font = '900 68px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(letter, x, y + 4);
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    drawCover();
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'cover.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+</body>
+</html>
