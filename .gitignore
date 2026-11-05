@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Local environment & editors
+.env
+.env.local
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+# Vite preview / cache
+.vite/
+
+# start.ng REQUIREMENT:
+# The dist/ directory MUST be tracked and committed to git for static hosting.
+# Do NOT ignore dist/
+

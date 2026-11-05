@@ -1,0 +1,25 @@
+{
+  "leaderboard": {
+    "stats": [
+      {
+        "key": "words_spelled",
+        "label": "Words Spelled",
+        "order": "highest",
+        "format": "number"
+      },
+      {
+        "key": "accuracy",
+        "label": "Accuracy (%)",
+        "order": "highest",
+        "format": "number"
+      },
+      {
+        "key": "best_streak",
+        "label": "Best Streak",
+        "order": "highest",
+        "format": "number"
+      }
+    ]
+  }
+}
+

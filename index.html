@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="description" content="SpellBridge 3D - Low-poly educational word-building puzzle runner" />
+    <meta name="theme-color" content="#a6ddf7" />
+    <title>SpellBridge 3D</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- Fullscreen 3D WebGL Canvas -->
+      <canvas id="webgl-canvas"></canvas>
+
+      <!-- UI Overlay -->
+      <div class="ui-overlay">
+        <!-- Top Bar: Branding & Floating Profile Card -->
+        <header class="hud-header">
+          <div class="brand-badge">
+            <span class="brand-icon">🌉</span>
+            <span class="brand-title">SpellBridge 3D</span>
+            <span class="brand-status">Ready</span>
+          </div>
+
+          <!-- Top-Center Word Clue HUD -->
+          <div class="word-clue-hud" id="word-clue-hud">
+            <div class="clue-top-row">
+              <span class="clue-emoji" id="clue-emoji">🌊</span>
+              <div class="clue-lives" id="clue-lives" aria-label="Lives">❤️❤️❤️</div>
+              <div class="clue-streak-pill" id="clue-streak-pill">
+                <span class="streak-fire">🔥</span>
+                <span class="streak-count" id="clue-streak">0</span>
+              </div>
+            </div>
+            <div class="letter-slots" id="letter-slots">
+              <span class="letter-slot filled">S</span>
+              <span class="letter-slot filled">P</span>
+              <span class="letter-slot filled">E</span>
+              <span class="letter-slot filled">L</span>
+              <span class="letter-slot filled">L</span>
+            </div>
+          </div>
+
+          <!-- start.ng Player Profile Card -->
+          <div class="player-card" id="player-hud" title="Player Profile">
+            <div class="player-avatar" id="player-avatar">✨</div>
+            <div class="player-info">
+              <span class="player-name" id="player-name">Adventurer</span>
+              <span class="player-handle" id="player-handle">@guest</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Bottom Status Panel -->
+        <footer class="stats-panel">
+          <div class="stat-item">
+            <span class="stat-label">Words Spelled</span>
+            <span class="stat-value" id="stat-words">0</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-label">Accuracy</span>
+            <span class="stat-value" id="stat-accuracy">100%</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-label">Best Streak</span>
+            <span class="stat-value" id="stat-streak">0</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
+
