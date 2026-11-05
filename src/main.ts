@@ -4,14 +4,18 @@ import { SceneManager } from './engine/SceneManager';
 import { GameLoop } from './engine/GameLoop';
 import { WaterPlane } from './engine/WaterPlane';
 import { BridgeEnvironment } from './world/BridgeEnvironment';
-import { StartNgBridge, StartNgUser } from './startng/StartNgBridge';
+import { StartNgService, StartNgUser } from './services/StartNgService';
+import { ProfileCard } from './ui/ProfileCard';
+import { pickWordForStage, WordProgressTracker, WordEntry } from './data/WordBank';
 
 class SpellBridgeApp {
   private readonly sceneManager: SceneManager;
   private readonly gameLoop: GameLoop;
   private readonly water: WaterPlane;
   private readonly environment: BridgeEnvironment;
-  private readonly startNgBridge: StartNgBridge;
+  private readonly startNgService: StartNgService;
+  private readonly profileCard: ProfileCard;
+  private readonly wordTracker: WordProgressTracker;
 
   // Tracking target for smooth isometric camera follow
   private readonly cameraTarget: THREE.Vector3 = new THREE.Vector3(0, 0, 0);
@@ -22,7 +26,7 @@ class SpellBridgeApp {
       throw new Error('Canvas element #webgl-canvas not found.');
     }
 
-    // 1. Initialize Scene & Renderer with clamped pixel ratio and lighting
+    // 1. Initialize Scene & Renderer with clamped pixel ratio and soft cartoon lighting
     this.sceneManager = new SceneManager({ canvas });
 
     // 2. Initialize Clamped Delta-timed Game Loop
@@ -38,63 +42,58 @@ class SpellBridgeApp {
     });
     this.sceneManager.add(this.water.group);
 
-    // 4. Add Scenic River Environment (Islands, Trees & Letter Bridge)
+    // 4. Initialize Educational Vocabulary Engine (Stage 2: 4-Letter Word e.g. FROG)
+    const initialWord: WordEntry = pickWordForStage(2);
+    this.wordTracker = new WordProgressTracker(initialWord);
+
+    // 5. Add Scenic River Environment with Stepping Stones for Current Word
     this.environment = new BridgeEnvironment(this.water);
+    this.environment.setTargetWord(this.wordTracker.word);
     this.sceneManager.add(this.environment.group);
 
-    // 5. Connect start.ng Platform Integration
-    this.startNgBridge = new StartNgBridge();
-    this.bindStartNgUI();
+    // 6. Connect start.ng Platform Integration & Floating ProfileCard
+    this.startNgService = StartNgService.getInstance();
+    
+    const profileContainer = document.getElementById('player-hud');
+    this.profileCard = new ProfileCard({
+      container: profileContainer || undefined,
+      onSignIn: () => this.startNgService.signInRedirect(),
+      returnUrl: window.location.origin + window.location.pathname,
+    });
 
-    // 6. Setup Frame Updates, Resizing & Camera Lerp
+    this.startNgService.onUserChanged((user: StartNgUser) => {
+      this.profileCard.update(user);
+    });
+
+    // 7. Render Word Clue HUD (Emoji, masked slots, streak)
+    this.renderWordClueHUD();
+
+    // 8. Setup Frame Updates, Resizing & Camera Lerp
     this.setupEvents();
 
-    // 7. Start the Animation Loop
+    // 9. Start the Animation Loop
     this.gameLoop.start();
   }
 
-  private bindStartNgUI(): void {
-    const nameEl = document.getElementById('player-name');
-    const handleEl = document.getElementById('player-handle');
-    const avatarEl = document.getElementById('player-avatar');
-    const playerHud = document.getElementById('player-hud');
+  private renderWordClueHUD(): void {
+    const emojiEl = document.getElementById('clue-emoji');
+    const slotsEl = document.getElementById('letter-slots');
 
-    this.startNgBridge.onUserChanged((user: StartNgUser) => {
-      if (nameEl) nameEl.textContent = user.name;
-      if (handleEl) handleEl.textContent = `@${user.account}`;
+    if (emojiEl) {
+      emojiEl.textContent = this.wordTracker.emoji;
+    }
 
-      if (avatarEl) {
-        // Safe fallback: use image if valid URL, otherwise colored initial badge
-        if (user.face && (user.face.startsWith('http') || user.face.startsWith('data:'))) {
-          avatarEl.innerHTML = '';
-          const img = document.createElement('img');
-          img.src = user.face;
-          img.alt = user.name;
-          img.style.width = '100%';
-          img.style.height = '100%';
-          img.style.objectFit = 'cover';
-          img.onerror = () => {
-            avatarEl.textContent = user.name.slice(0, 1).toUpperCase();
-          };
-          avatarEl.appendChild(img);
-        } else {
-          avatarEl.textContent = user.face || (user.guest ? '✨' : user.name.slice(0, 1).toUpperCase());
-        }
-
-        if (user.style?.primaryColor) {
-          avatarEl.style.backgroundColor = user.style.primaryColor;
-        }
-      }
-
-      if (user.guest && playerHud) {
-        playerHud.style.cursor = 'pointer';
-        playerHud.title = 'Click to sign in to start.ng';
-        playerHud.onclick = () => this.startNgBridge.signInRedirect();
-      } else if (playerHud) {
-        playerHud.style.cursor = 'default';
-        playerHud.onclick = null;
-      }
-    });
+    if (slotsEl) {
+      slotsEl.innerHTML = '';
+      const slots = this.wordTracker.getMaskedSlots();
+      slots.forEach((char, index) => {
+        const slot = document.createElement('span');
+        const isFilled = index < this.wordTracker.currentIndex;
+        slot.className = `letter-slot ${isFilled ? 'filled' : ''}`;
+        slot.textContent = isFilled ? char : '';
+        slotsEl.appendChild(slot);
+      });
+    }
   }
 
   private setupEvents(): void {
@@ -109,7 +108,7 @@ class SpellBridgeApp {
       this.environment.update(delta, elapsed);
 
       // Smooth camera sway across the bridge to showcase isometric follow
-      const sweepX = Math.sin(elapsed * 0.45) * 4.0;
+      const sweepX = Math.sin(elapsed * 0.45) * 3.5;
       this.cameraTarget.set(sweepX, 0.4, 0);
       this.sceneManager.followTarget(this.cameraTarget, delta);
     });
@@ -125,4 +124,3 @@ class SpellBridgeApp {
 window.addEventListener('DOMContentLoaded', () => {
   new SpellBridgeApp();
 });
-

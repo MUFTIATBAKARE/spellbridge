@@ -10,7 +10,7 @@ export class BridgeEnvironment {
     this.group = new THREE.Group();
     this.water = water;
     this.buildIslands();
-    this.buildLetterBridge();
+    this.setTargetWord('FROG');
   }
 
   private buildIslands(): void {
@@ -99,11 +99,17 @@ export class BridgeEnvironment {
     return tree;
   }
 
-  private buildLetterBridge(): void {
-    // Stepping stones with letters "S", "P", "E", "L", "L" across the scenic water channel
-    const letters = ['S', 'P', 'E', 'L', 'L'];
-    const startX = -5.0;
-    const spacing = 2.5;
+  public setTargetWord(word: string): void {
+    // Clean up existing stones
+    this.steppingStones.forEach((stone) => {
+      this.group.remove(stone);
+    });
+    this.steppingStones.length = 0;
+
+    const letters = word.toUpperCase().split('');
+    const count = letters.length;
+    const spacing = Math.min(2.5, 9.5 / Math.max(count - 1, 1));
+    const startX = -((count - 1) * spacing) / 2;
 
     letters.forEach((letter, index) => {
       const stoneGroup = this.createLetterStone(letter);

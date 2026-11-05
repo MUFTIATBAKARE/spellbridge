@@ -170,58 +170,102 @@ html, body {
 }
 
 /* Player HUD profile card (start.ng standard) */
-.player-card {
+.player-profile-card {
   pointer-events: auto;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 0.45rem 0.85rem;
-  border-radius: 9999px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.65rem;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.4rem 0.85rem 0.4rem 0.5rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  user-select: none;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.player-card:hover {
+.player-profile-card:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
-.player-avatar {
-  width: 32px;
-  height: 32px;
+.profile-avatar-wrapper {
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: #3b82f6;
-  color: #ffffff;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
+  flex-shrink: 0;
+  background: #e2e8f0;
 }
 
-.player-info {
+.profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-avatar-badge {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+.profile-text-group {
   display: flex;
   flex-direction: column;
+  line-height: 1.15;
 }
 
-.player-name {
-  font-weight: 700;
+.profile-name {
   font-size: 0.82rem;
-  color: #1e293b;
-  line-height: 1.1;
+  font-weight: 800;
+  color: #0f172a;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.player-handle {
+.profile-handle {
   font-size: 0.68rem;
   color: #64748b;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.profile-signin-btn {
+  margin-left: 0.35rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff !important;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.32rem 0.75rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+
+.profile-signin-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+  opacity: 0.95;
+}
+
+.profile-signin-btn:active {
+  transform: translateY(0);
 }
 
 /* Stats panel */
